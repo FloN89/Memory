@@ -177,3 +177,16 @@
   object-fit: contain !important;
   image-rendering: auto !important;
 }
+@media (min-width: 1440px) and (min-height: 850px) {
+  .memory-game.theme-code-vibes img.memory-token,
+  .memory-game.theme-code-vibes img.memory-token--blue,
+  .memory-game.theme-code-vibes img.memory-token--orange {
+    height: 18px !important;
+  }
+
+  .memory-winner.theme-code-vibes.memory-winner--blue .memory-winner__icon,
+  .memory-winner.theme-code-vibes.memory-winner--orange .memory-winner__icon {
+    height: 26px !important;
+    max-width: 92px !important;
+  }
+}
