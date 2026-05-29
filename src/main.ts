@@ -10,6 +10,31 @@ type SettingsState = {
   boardSize: BoardSize | null;
 };
 
+type CompleteSettings = {
+  theme: ThemeKey;
+  player: PlayerKey;
+  boardSize: BoardSize;
+  startedAt: number;
+};
+
+type CodeVibesCard = {
+  id: string;
+  pairId: number;
+  image: string;
+  isFlipped: boolean;
+  isMatched: boolean;
+};
+
+type CodeVibesGameState = {
+  settings: CompleteSettings;
+  cards: CodeVibesCard[];
+  currentPlayer: PlayerKey;
+  score: Record<PlayerKey, number>;
+  flippedIds: string[];
+  lockBoard: boolean;
+  isFinished: boolean;
+};
+
 function getRequiredElement<T extends Element>(selector: string): T {
   const element = document.querySelector<T>(selector);
 
@@ -66,6 +91,27 @@ const themeOptions: Record<ThemeKey, { label: string; previewImage: string }> = 
     previewImage: asset("assets/food-themes/Property 1=foods.png"),
   },
 };
+
+const codeVibesAssets = {
+  cardBack: asset("assets/dev-themes/code-vibes/card-back.png"),
+  cardBackHover: asset("assets/dev-themes/code-vibes/card-back-hover.png"),
+
+  blueToken: asset("assets/dev-themes/code-vibes/blue-token.png"),
+  orangeToken: asset("assets/dev-themes/code-vibes/orange-token.png"),
+
+  exitIcon: asset("assets/dev-themes/code-vibes/exit-icon.png"),
+  exitIconHover: asset("assets/dev-themes/code-vibes/exit-icon-hover.png"),
+
+  blueWinner: asset("assets/dev-themes/code-vibes/blue-winner.png"),
+  orangeWinner: asset("assets/dev-themes/code-vibes/orange-winner.png"),
+
+  confetti: asset("assets/dev-themes/code-vibes/confetti.png"),
+} as const;
+
+const codeVibesCardFronts = Array.from({ length: 18 }, (_, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  return asset(`assets/dev-themes/code-vibes/cards/code-logo-${number}.png`);
+});
 
 const state: SettingsState = {
   theme: null,
@@ -331,26 +377,29 @@ function bindSettingsEvents(): void {
   });
 
   settingsStartButton?.addEventListener("click", () => {
-    if (!isSettingsComplete()) {
+    if (!state.theme || !state.player || !state.boardSize) {
       return;
     }
 
-    window.dispatchEvent(
-      new CustomEvent("game:settings-start", {
-        detail: {
-          theme: state.theme,
-          player: state.player,
-          boardSize: state.boardSize,
-          startedAt: Date.now(),
-        },
-      }),
-    );
-
-    console.log("Spiel starten mit:", {
+    const selectedSettings: CompleteSettings = {
       theme: state.theme,
       player: state.player,
       boardSize: state.boardSize,
-    });
+      startedAt: Date.now(),
+    };
+
+    window.dispatchEvent(
+      new CustomEvent("game:settings-start", {
+        detail: selectedSettings,
+      }),
+    );
+
+    if (selectedSettings.theme === "code-vibes") {
+      renderCodeVibesGame(selectedSettings);
+      return;
+    }
+
+    console.log("Für dieses Theme gibt es noch keinen Game-Screen:", selectedSettings);
   });
 }
 
@@ -408,8 +457,387 @@ function isSettingsComplete(): boolean {
   return Boolean(state.theme && state.player && state.boardSize);
 }
 
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function renderCodeVibesGame(settings: CompleteSettings): void {
+  const game = createCodeVibesGame(settings);
+
+  field.className = `code-vibes-game code-vibes-game--${settings.boardSize}`;
+  field.setAttribute("aria-label", "Code vibes memory game");
+
+  field.style.setProperty("--code-card-back-image", `url("${codeVibesAssets.cardBack}")`);
+  field.style.setProperty("--code-card-back-hover-image", `url("${codeVibesAssets.cardBackHover}")`);
+
+  preloadCodeVibesAssets();
+
+  field.innerHTML = `
+    <header class="code-vibes-game__topbar">
+      <div class="code-vibes-scoreboard" aria-label="Score">
+        ${renderCodeVibesScoreItem("blue", game.score.blue)}
+        ${renderCodeVibesScoreItem("orange", game.score.orange)}
+      </div>
+
+      <div class="code-vibes-current">
+        <span>Current player:</span>
+        <span data-current-player>${renderCodeVibesToken(game.currentPlayer)}</span>
+      </div>
+
+      <button class="code-vibes-exit" data-code-exit type="button">
+        <img
+          class="code-vibes-exit__icon"
+          src="${codeVibesAssets.exitIcon}"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+        />
+        <span>Exit game</span>
+      </button>
+    </header>
+
+    <main class="code-vibes-board" aria-label="Memory cards">
+      ${game.cards.map(renderCodeVibesCard).join("")}
+    </main>
+
+    <div data-code-dialog-root></div>
+  `;
+
+  bindCodeVibesGameEvents(game);
+  updateCodeVibesGameUi(game);
+}
+
+function createCodeVibesGame(settings: CompleteSettings): CodeVibesGameState {
+  const pairCount = settings.boardSize / 2;
+
+  const cards = codeVibesCardFronts.slice(0, pairCount).flatMap((image, pairId) => {
+    return [
+      {
+        id: `${pairId}-a`,
+        pairId,
+        image,
+        isFlipped: false,
+        isMatched: false,
+      },
+      {
+        id: `${pairId}-b`,
+        pairId,
+        image,
+        isFlipped: false,
+        isMatched: false,
+      },
+    ];
+  });
+
+  return {
+    settings,
+    cards: shuffleArray(cards),
+    currentPlayer: settings.player,
+    score: {
+      blue: 0,
+      orange: 0,
+    },
+    flippedIds: [],
+    lockBoard: false,
+    isFinished: false,
+  };
+}
+
+function renderCodeVibesScoreItem(player: PlayerKey, score: number): string {
+  return `
+    <span class="code-vibes-score code-vibes-score--${player}">
+      ${renderCodeVibesToken(player)}
+      <span>${capitalize(player)} <strong data-score="${player}">${score}</strong></span>
+    </span>
+  `;
+}
+
+function renderCodeVibesToken(player: PlayerKey): string {
+  const src = player === "blue" ? codeVibesAssets.blueToken : codeVibesAssets.orangeToken;
+
+  return `
+    <img
+      class="code-vibes-token code-vibes-token--${player}"
+      src="${src}"
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
+  `;
+}
+
+function renderCodeVibesCard(card: CodeVibesCard): string {
+  return `
+    <button
+      class="code-vibes-card"
+      data-card-id="${card.id}"
+      type="button"
+      aria-label="Karte aufdecken"
+    >
+      <span class="code-vibes-card__inner">
+        <span class="code-vibes-card__face code-vibes-card__face--back"></span>
+
+        <span class="code-vibes-card__face code-vibes-card__face--front">
+          <img src="${card.image}" alt="" draggable="false" />
+        </span>
+      </span>
+    </button>
+  `;
+}
+
+function bindCodeVibesGameEvents(game: CodeVibesGameState): void {
+  field.querySelectorAll<HTMLButtonElement>("[data-card-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const cardId = button.dataset.cardId;
+
+      if (!cardId) {
+        return;
+      }
+
+      handleCodeVibesCardClick(game, cardId);
+    });
+  });
+
+  const exitButton = field.querySelector<HTMLButtonElement>("[data-code-exit]");
+  const exitIcon = exitButton?.querySelector<HTMLImageElement>(".code-vibes-exit__icon");
+
+  exitButton?.addEventListener("pointerenter", () => {
+    if (exitIcon) {
+      exitIcon.src = codeVibesAssets.exitIconHover;
+    }
+  });
+
+  exitButton?.addEventListener("pointerleave", () => {
+    if (exitIcon) {
+      exitIcon.src = codeVibesAssets.exitIcon;
+    }
+  });
+
+  exitButton?.addEventListener("click", () => {
+    showCodeVibesQuitDialog(game);
+  });
+}
+
+function handleCodeVibesCardClick(game: CodeVibesGameState, cardId: string): void {
+  if (game.lockBoard || game.isFinished) {
+    return;
+  }
+
+  const card = game.cards.find((item) => item.id === cardId);
+
+  if (!card || card.isFlipped || card.isMatched) {
+    return;
+  }
+
+  card.isFlipped = true;
+  game.flippedIds.push(card.id);
+
+  updateCodeVibesGameUi(game);
+
+  if (game.flippedIds.length < 2) {
+    return;
+  }
+
+  game.lockBoard = true;
+
+  const [firstId, secondId] = game.flippedIds;
+  const firstCard = game.cards.find((item) => item.id === firstId);
+  const secondCard = game.cards.find((item) => item.id === secondId);
+
+  if (!firstCard || !secondCard) {
+    game.flippedIds = [];
+    game.lockBoard = false;
+    updateCodeVibesGameUi(game);
+    return;
+  }
+
+  const isMatch = firstCard.pairId === secondCard.pairId;
+
+  if (isMatch) {
+    window.setTimeout(() => {
+      firstCard.isMatched = true;
+      secondCard.isMatched = true;
+
+      game.score[game.currentPlayer] += 2;
+      game.flippedIds = [];
+      game.lockBoard = false;
+
+      updateCodeVibesGameUi(game);
+
+      if (game.cards.every((item) => item.isMatched)) {
+        game.isFinished = true;
+
+        window.setTimeout(() => {
+          renderCodeVibesGameOver(game, true);
+        }, 650);
+      }
+    }, 350);
+
+    return;
+  }
+
+  window.setTimeout(() => {
+    firstCard.isFlipped = false;
+    secondCard.isFlipped = false;
+
+    game.flippedIds = [];
+    game.currentPlayer = game.currentPlayer === "blue" ? "orange" : "blue";
+    game.lockBoard = false;
+
+    updateCodeVibesGameUi(game);
+  }, 850);
+}
+
+function updateCodeVibesGameUi(game: CodeVibesGameState): void {
+  const blueScore = field.querySelector<HTMLElement>('[data-score="blue"]');
+  const orangeScore = field.querySelector<HTMLElement>('[data-score="orange"]');
+  const currentPlayer = field.querySelector<HTMLElement>("[data-current-player]");
+
+  if (blueScore) {
+    blueScore.textContent = String(game.score.blue);
+  }
+
+  if (orangeScore) {
+    orangeScore.textContent = String(game.score.orange);
+  }
+
+  if (currentPlayer) {
+    currentPlayer.innerHTML = renderCodeVibesToken(game.currentPlayer);
+  }
+
+  field.querySelectorAll<HTMLButtonElement>("[data-card-id]").forEach((button) => {
+    const card = game.cards.find((item) => item.id === button.dataset.cardId);
+
+    if (!card) {
+      return;
+    }
+
+    button.classList.toggle("is-flipped", card.isFlipped || card.isMatched);
+    button.classList.toggle("is-matched", card.isMatched);
+
+    button.disabled = game.lockBoard || card.isFlipped || card.isMatched;
+  });
+}
+
+function showCodeVibesQuitDialog(game: CodeVibesGameState): void {
+  const dialogRoot = field.querySelector<HTMLElement>("[data-code-dialog-root]");
+
+  if (!dialogRoot) {
+    return;
+  }
+
+  dialogRoot.innerHTML = `
+    <div class="code-vibes-modal" role="dialog" aria-modal="true" aria-label="Exit game confirmation">
+      <div class="code-vibes-modal__panel">
+        <h2>Are you sure you want to quit<br />the game?</h2>
+
+        <div class="code-vibes-modal__actions">
+          <button class="code-vibes-modal__button code-vibes-modal__button--filled" data-code-back type="button">
+            Back to game
+          </button>
+
+          <button class="code-vibes-modal__button code-vibes-modal__button--ghost" data-code-quit-confirm type="button">
+            Exit game
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  dialogRoot.querySelector<HTMLButtonElement>("[data-code-back]")?.addEventListener("click", () => {
+    dialogRoot.innerHTML = "";
+  });
+
+  dialogRoot
+    .querySelector<HTMLButtonElement>("[data-code-quit-confirm]")
+    ?.addEventListener("click", () => {
+      renderCodeVibesGameOver(game, true);
+    });
+}
+
+function renderCodeVibesGameOver(game: CodeVibesGameState, showWinnerAfterDelay = false): void {
+  field.className = "code-vibes-game-over";
+  field.setAttribute("aria-label", "Game over");
+
+  field.innerHTML = `
+    <section class="code-vibes-game-over__content">
+      <h1>Game over</h1>
+
+      <p>Final score</p>
+
+      <div class="code-vibes-game-over__score">
+        ${renderCodeVibesScoreItem("blue", game.score.blue)}
+        ${renderCodeVibesScoreItem("orange", game.score.orange)}
+      </div>
+    </section>
+  `;
+
+  if (showWinnerAfterDelay) {
+    window.setTimeout(() => {
+      renderCodeVibesWinner(game);
+    }, 1800);
+  }
+}
+
+function renderCodeVibesWinner(game: CodeVibesGameState): void {
+  const winner = getCodeVibesWinner(game);
+  const winnerClass = winner ?? "draw";
+  const winnerText = winner ? `${winner.toUpperCase()} PLAYER` : "DRAW";
+  const winnerImage =
+    winner === "blue"
+      ? codeVibesAssets.blueWinner
+      : winner === "orange"
+        ? codeVibesAssets.orangeWinner
+        : "";
+
+  field.className = `code-vibes-winner code-vibes-winner--${winnerClass}`;
+  field.setAttribute("aria-label", "Winner");
+
+  field.innerHTML = `
+    <img
+      class="code-vibes-winner__confetti"
+      src="${codeVibesAssets.confetti}"
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+    />
+
+    <section class="code-vibes-winner__content">
+      <p>The winner is</p>
+
+      <h1>${winnerText}</h1>
+
+      ${
+        winnerImage
+          ? `
+            <img
+              class="code-vibes-winner__icon"
+              src="${winnerImage}"
+              alt=""
+              aria-hidden="true"
+              draggable="false"
+            />
+          `
+          : `<div class="code-vibes-winner__draw-icon">=</div>`
+      }
+
+      <button class="code-vibes-winner__back" data-code-back-start type="button">
+        Back to start
+      </button>
+    </section>
+  `;
+
+  field.querySelector<HTMLButtonElement>("[data-code-back-start]")?.addEventListener("click", () => {
+    window.location.reload();
+  });
+}
+
+function getCodeVibesWinner(game: CodeVibesGameState): PlayerKey | null {
+  if (game.score.blue > game.score.orange) {
+    return "blue";
+  }
+
+  if (game.score.orange > game.score.blue) {
+    return "orange";
+  }
+
+  return null;
 }
 
 function preloadSettingsAssets(): void {
@@ -428,7 +856,37 @@ function preloadSettingsAssets(): void {
   ].forEach(preloadImage);
 }
 
+function preloadCodeVibesAssets(): void {
+  [
+    codeVibesAssets.cardBack,
+    codeVibesAssets.cardBackHover,
+    codeVibesAssets.blueToken,
+    codeVibesAssets.orangeToken,
+    codeVibesAssets.exitIcon,
+    codeVibesAssets.exitIconHover,
+    codeVibesAssets.blueWinner,
+    codeVibesAssets.orangeWinner,
+    codeVibesAssets.confetti,
+    ...codeVibesCardFronts,
+  ].forEach(preloadImage);
+}
+
 function preloadImage(src: string): void {
   const image = new Image();
   image.src = src;
+}
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function shuffleArray<T>(items: T[]): T[] {
+  const array = [...items];
+
+  for (let index = array.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+  }
+
+  return array;
 }
