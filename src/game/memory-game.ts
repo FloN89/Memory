@@ -5,15 +5,21 @@ import type {
   CompleteSettings,
   MemoryCard,
   MemoryGameState,
+  PlayerKey,
   ThemeConfig,
 } from "./types";
 import { setCssImage, shuffleArray } from "./utils";
 
-const CARDS_PER_PAIR = 2;
-const MATCH_SCORE = 2;
-const MATCH_DELAY_MS = 350;
-const WINNER_SCREEN_DELAY_MS = 650;
-const MISMATCH_DELAY_MS = 850;
+const CARDS_PER_PAIR = 2 as const;
+const MATCH_SCORE = 2 as const;
+const MATCH_DELAY_MS = 350 as const;
+const WINNER_SCREEN_DELAY_MS = 650 as const;
+const MISMATCH_DELAY_MS = 850 as const;
+
+const NEXT_PLAYER = {
+  blue: "orange",
+  orange: "blue",
+} as const satisfies Record<PlayerKey, PlayerKey>;
 
 let field: HTMLElement;
 
@@ -331,7 +337,7 @@ const completeMismatch = (
   firstCard.isFlipped = false;
   secondCard.isFlipped = false;
   game.flippedIds = [];
-  game.currentPlayer = game.currentPlayer === "blue" ? "orange" : "blue";
+  game.currentPlayer = NEXT_PLAYER[game.currentPlayer];
   game.lockBoard = false;
   updateGameUi(field, game);
 };

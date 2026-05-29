@@ -223,9 +223,10 @@
 
   img {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: var(--card-image-size, 100%);
+    height: var(--card-image-size, 100%);
+    object-fit: contain;
+    image-rendering: auto;
     user-select: none;
     pointer-events: none;
   }
@@ -365,6 +366,15 @@
   width: clamp(98px, 13vw, 190px);
   height: auto;
   object-fit: contain;
+  animation: winner-confetti-drop 900ms ease-out both;
+}
+
+.memory-winner__confetti:nth-child(2n) {
+  animation-delay: 90ms;
+}
+
+.memory-winner__confetti:nth-child(3n) {
+  animation-delay: 160ms;
 }
 
 .memory-winner__confetti:only-child {
@@ -423,6 +433,7 @@
   display: grid;
   justify-items: center;
   padding-top: 40px;
+  animation: winner-content-in 420ms ease-out both;
 
   p {
     margin: 0 0 18px;
@@ -441,6 +452,7 @@
     line-height: 0.95;
     letter-spacing: var(--display-letter-spacing, 0);
     text-shadow: var(--winner-shadow);
+    animation: winner-title-pop 650ms 120ms cubic-bezier(0.2, 1.35, 0.35, 1) both;
   }
 }
 
@@ -461,8 +473,11 @@
   width: var(--winner-icon-width, 220px);
   height: var(--winner-icon-height, 220px);
   object-fit: contain;
+  image-rendering: auto;
   margin-bottom: 58px;
   filter: var(--winner-icon-filter, none);
+  transform-origin: center;
+  animation: winner-icon-bounce 760ms 260ms cubic-bezier(0.2, 1.35, 0.35, 1) both;
 }
 
 .memory-winner__draw-icon {
@@ -476,6 +491,7 @@
   color: var(--theme-primary);
   font-size: 90px;
   font-weight: 900;
+  animation: winner-icon-bounce 760ms 260ms cubic-bezier(0.2, 1.35, 0.35, 1) both;
 }
 
 .memory-winner__back {
@@ -504,6 +520,64 @@
   &:focus-visible {
     outline: 3px solid var(--focus-ring);
     outline-offset: 5px;
+  }
+}
+
+@keyframes winner-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes winner-title-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.84);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes winner-icon-bounce {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) scale(0.8) rotate(-6deg);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.08) rotate(4deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
+@keyframes winner-confetti-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-34px) rotate(-8deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
   }
 }
 
@@ -602,13 +676,11 @@
   }
 }
 
-
 .memory-winner.memory-winner--blue .memory-winner__icon,
 .memory-winner.memory-winner--orange .memory-winner__icon {
   width: clamp(78px, 8vw, 110px);
   height: clamp(78px, 8vw, 110px);
 }
-
 
 .memory-winner.theme-code-vibes.memory-winner--blue .memory-winner__icon,
 .memory-winner.theme-code-vibes.memory-winner--orange .memory-winner__icon {

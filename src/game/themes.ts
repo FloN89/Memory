@@ -101,8 +101,8 @@ export const THEME_CONFIGS: Record<ThemeKey, ThemeConfig> = {
     exitIcon: asset("assets/game-themes/Property 1=Default.png"),
     exitIconHover: asset("assets/game-themes/Property 1=hover.png"),
 
-    blueWinner: asset("assets/game-themes/pockal 1.png"),
-    orangeWinner: asset("assets/game-themes/pockal 1.png"),
+    blueWinner: asset("assets/game-themes/chess_pawn_blue.png"),
+    orangeWinner: asset("assets/game-themes/chess_pawn.png"),
     drawWinner: asset("assets/game-themes/Scale_Icon.png"),
 
     buttons: {
@@ -133,8 +133,8 @@ export const THEME_CONFIGS: Record<ThemeKey, ThemeConfig> = {
     exitIcon: asset("assets/food-themes/Property 1=Default (2).png"),
     exitIconHover: asset("assets/food-themes/Property 1=hover (2).png"),
 
-    blueWinner: asset("assets/food-themes/chess_pawn.png"),
-    orangeWinner: asset("assets/food-themes/Frame 739_orange.png"),
+    blueWinner: asset("assets/food-themes/chess_pawn_blue.png"),
+    orangeWinner: asset("assets/food-themes/chess_pawn.png"),
     drawWinner: asset("assets/food-themes/Frame 739.png"),
 
     buttons: {

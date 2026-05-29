@@ -20,6 +20,8 @@ body {
 }
 
 body {
+  display: grid;
+  place-items: center;
   min-height: 100vh;
   overflow: hidden;
   background: var(--page-bg);
@@ -48,6 +50,13 @@ button {
   min-height: 100svh;
   margin: 0 auto;
   overflow: hidden;
+}
+
+.start-screen,
+.settings-screen {
+  height: min(100svh, 900px);
+  min-height: min(100svh, 900px);
+  max-height: 900px;
 }
 
 .start-screen {
@@ -90,23 +99,22 @@ button {
   height: 98px;
   padding: 0;
   border: 0;
-  background: transparent var(--play-button-image) center / contain no-repeat;
+  background: transparent var(--play-button-image) center / 100% 100% no-repeat;
   cursor: pointer;
   transform: translateX(-50%);
   transition:
-    scale 160ms ease,
+    filter 160ms ease,
     transform 160ms ease;
 
   &:hover,
   &:focus-visible,
   &.is-hovered {
     background-image: var(--play-button-hover-image);
-    scale: 1.04;
+    filter: brightness(1.03);
   }
 
   &:active {
     transform: translateX(-50%) translateY(2px);
-    scale: 0.98;
   }
 
   &:focus-visible {
@@ -144,11 +152,12 @@ button {
 .settings-screen__inner {
   display: grid;
   grid-template-columns: minmax(360px, 1fr) minmax(420px, 640px);
+  align-items: center;
   gap: clamp(40px, 7vw, 100px);
   width: min(1120px, calc(100% - 64px));
-  min-height: 100svh;
+  min-height: 100%;
   margin: 0 auto;
-  padding: clamp(64px, 13svh, 126px) 0 80px;
+  padding: clamp(48px, 8svh, 72px) 0;
 }
 
 .settings-screen__title {
@@ -347,17 +356,22 @@ button {
   margin-left: 8px;
   padding: 0;
   border: 0;
-  background: transparent var(--settings-start-button-image) center / contain no-repeat;
+  min-width: 148px;
+  flex: 0 0 148px;
+  background: transparent var(--settings-start-button-image) center / 100% 100% no-repeat;
   cursor: pointer;
+  transition: filter 140ms ease;
 
   &:not(:disabled):hover,
   &:not(:disabled):focus-visible {
     background-image: var(--settings-start-button-hover-image);
+    filter: brightness(1.03);
   }
 
   &:disabled {
     background-image: var(--settings-start-button-disabled-image);
     cursor: not-allowed;
+    filter: none;
   }
 }
 
@@ -375,6 +389,7 @@ button {
 
   .settings-screen__inner {
     grid-template-columns: 1fr;
+    align-items: start;
     gap: 48px;
     padding: 64px 0;
   }
