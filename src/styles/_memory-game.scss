@@ -482,3 +482,64 @@
     align-items: center;
   }
 }
+
+/* Image based buttons for the theme exports */
+.memory-exit {
+  min-width: 168px;
+  min-height: 54px;
+  padding: 0;
+  border: 0;
+  background: transparent var(--memory-exit-image) center / contain no-repeat;
+  box-shadow: none;
+
+  &:hover,
+  &:focus-visible {
+    background: transparent var(--memory-exit-hover-image) center / contain no-repeat;
+    box-shadow: none;
+    transform: translateY(-2px);
+  }
+}
+
+.memory-modal__image-button {
+  width: min(224px, 42vw);
+  min-height: 62px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    filter 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    filter: brightness(1.03);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 5px;
+  }
+}
+
+.memory-modal__image-button--back {
+  background-image: var(--memory-dialog-back-image);
+
+  &:hover,
+  &:focus-visible {
+    background-image: var(--memory-dialog-back-hover-image);
+  }
+}
+
+.memory-modal__image-button--exit {
+  background-image: var(--memory-dialog-exit-image);
+
+  &:hover,
+  &:focus-visible {
+    background-image: var(--memory-dialog-exit-hover-image);
+  }
+}
