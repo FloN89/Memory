@@ -1,0 +1,484 @@
+.memory-game,
+.memory-game-over,
+.memory-winner {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  font-family: var(--theme-font, Arial, Helvetica, sans-serif);
+}
+
+.memory-game {
+  position: relative;
+  padding: 42px clamp(28px, 7vw, 112px) 64px;
+}
+
+.memory-game__topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: var(--topbar-padding, 22px 24px);
+  border: var(--topbar-border, 0);
+  border-radius: var(--topbar-radius, 10px);
+  background: var(--theme-panel);
+  box-shadow: var(--topbar-shadow, none);
+}
+
+.memory-scoreboard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  justify-self: start;
+  padding: 13px 18px;
+  border-radius: var(--score-radius, 8px);
+  background: var(--score-bg);
+}
+
+.memory-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: clamp(22px, 2.1vw, 34px);
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+
+  strong {
+    font: inherit;
+  }
+}
+
+.memory-score--blue {
+  color: var(--theme-blue);
+}
+
+.memory-score--orange {
+  color: var(--theme-orange);
+}
+
+.memory-token {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.memory-current {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--theme-current-text, var(--theme-text));
+  font-size: clamp(23px, 2.2vw, 34px);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.memory-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 12px;
+  min-width: 190px;
+  min-height: 54px;
+  padding: 0 22px;
+  border: 2px solid var(--theme-primary);
+  border-radius: var(--button-radius, 10px);
+  background: var(--button-bg);
+  color: var(--button-text, var(--theme-text));
+  font-size: clamp(18px, 1.65vw, 24px);
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease,
+    filter 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--button-hover-bg);
+    box-shadow: var(--button-hover-shadow);
+    transform: translate(-2px, -2px);
+  }
+
+  &:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 5px;
+  }
+}
+
+.memory-exit__icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.memory-board {
+  display: grid;
+  justify-content: center;
+  gap: var(--board-gap, 16px);
+  margin: var(--board-margin, 54px auto 0);
+}
+
+.memory-game--16 .memory-board {
+  grid-template-columns: repeat(4, var(--card-size-16, 120px));
+}
+
+.memory-game--24 .memory-board {
+  grid-template-columns: repeat(6, var(--card-size-24, 108px));
+}
+
+.memory-game--36 .memory-board {
+  grid-template-columns: repeat(6, var(--card-size-36, 92px));
+}
+
+.memory-card {
+  width: var(--card-size-16, 120px);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  perspective: 900px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:not(:disabled):hover .memory-card__face--back,
+  &:focus-visible .memory-card__face--back {
+    background-image: var(--memory-card-back-hover-image);
+    transform: translateY(-4px) scale(1.015);
+    filter: brightness(1.07) saturate(1.1);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 5px;
+  }
+}
+
+.memory-game--24 .memory-card {
+  width: var(--card-size-24, 108px);
+}
+
+.memory-game--36 .memory-card {
+  width: var(--card-size-36, 92px);
+}
+
+.memory-card__inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 350ms ease;
+}
+
+.memory-card.is-flipped .memory-card__inner,
+.memory-card.is-matched .memory-card__inner {
+  transform: rotateY(180deg);
+}
+
+.memory-card__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--card-radius, 12px);
+  backface-visibility: hidden;
+}
+
+.memory-card__face--back {
+  border: var(--card-back-border, 0);
+  background-color: var(--card-back-bg);
+  background-image: var(--memory-card-back-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 150ms ease,
+    filter 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.memory-card__face--front {
+  padding: var(--card-front-padding, 14px);
+  border: var(--card-front-border, 0);
+  background: var(--card-front-bg);
+  box-shadow: var(--card-shadow);
+  transform: rotateY(180deg);
+
+  img {
+    display: block;
+    width: var(--card-image-size, 76%);
+    height: var(--card-image-size, 76%);
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+  }
+}
+
+.memory-card.is-matched {
+  opacity: var(--matched-opacity, 0.58);
+}
+
+.memory-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--modal-backdrop);
+}
+
+.memory-modal__panel {
+  width: min(540px, calc(100vw - 40px));
+  padding: 43px 40px 40px;
+  border: var(--modal-border, 0);
+  border-radius: var(--modal-radius, 14px);
+  background: var(--modal-bg);
+  color: var(--modal-text);
+  text-align: center;
+  box-shadow: var(--modal-shadow);
+
+  h2 {
+    margin: 0 0 48px;
+    font-size: clamp(25px, 2.3vw, 34px);
+    font-weight: 800;
+    line-height: 1.35;
+  }
+}
+
+.memory-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.memory-modal__button {
+  min-width: 150px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 2px solid var(--theme-primary);
+  border-radius: var(--button-radius, 10px);
+  background: transparent;
+  color: var(--theme-primary);
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    filter 150ms ease,
+    background-color 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+    filter: brightness(0.98);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 4px;
+  }
+}
+
+.memory-modal__button--filled {
+  background: var(--theme-primary);
+  color: var(--modal-filled-text, #fff);
+}
+
+.memory-game-over,
+.memory-winner {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.memory-game-over__content {
+  display: grid;
+  place-items: center;
+  transform: translateY(-22px);
+
+  h1 {
+    margin: 0 0 96px;
+    color: var(--game-over-title);
+    font-family: var(--theme-display-font, Georgia, "Times New Roman", serif);
+    font-size: clamp(76px, 11vw, 150px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: var(--display-letter-spacing, -0.045em);
+    text-transform: uppercase;
+    text-shadow: var(--game-over-shadow);
+  }
+
+  p {
+    margin: 0 0 24px;
+    color: var(--theme-text);
+    font-size: clamp(24px, 2.1vw, 34px);
+    font-weight: 800;
+  }
+}
+
+.memory-game-over__score {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 22px;
+  border-radius: var(--score-radius, 8px);
+  background: var(--score-bg);
+}
+
+.memory-winner {
+  position: relative;
+}
+
+.memory-winner__confetti {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: min(1120px, calc(100% - 100px));
+  max-height: 280px;
+  object-fit: contain;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.memory-winner__content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  padding-top: 40px;
+
+  p {
+    margin: 0 0 18px;
+    color: var(--theme-text);
+    font-size: clamp(26px, 2.6vw, 38px);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  h1 {
+    margin: 0 0 56px;
+    color: var(--winner-title);
+    font-family: var(--theme-display-font, Georgia, "Times New Roman", serif);
+    font-size: clamp(52px, 6vw, 90px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: var(--display-letter-spacing, 0);
+    text-shadow: var(--winner-shadow);
+  }
+}
+
+.memory-winner--blue .memory-winner__content h1 {
+  color: var(--theme-blue);
+}
+
+.memory-winner--orange .memory-winner__content h1 {
+  color: var(--theme-orange);
+}
+
+.memory-winner--draw .memory-winner__content h1 {
+  color: var(--theme-primary);
+}
+
+.memory-winner__icon {
+  display: block;
+  width: var(--winner-icon-width, 220px);
+  height: var(--winner-icon-height, 220px);
+  object-fit: contain;
+  margin-bottom: 58px;
+  filter: var(--winner-icon-filter, none);
+}
+
+.memory-winner__draw-icon {
+  display: grid;
+  place-items: center;
+  width: 176px;
+  height: 176px;
+  margin-bottom: 70px;
+  border: 12px solid var(--theme-primary);
+  border-radius: 50%;
+  color: var(--theme-primary);
+  font-size: 90px;
+  font-weight: 900;
+}
+
+.memory-winner__back {
+  min-width: 128px;
+  min-height: 50px;
+  padding: 0 24px;
+  border: 2px solid var(--theme-primary);
+  border-radius: var(--button-radius, 10px);
+  background: var(--button-bg);
+  color: var(--button-text, var(--theme-text));
+  font-size: 21px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--button-hover-bg);
+    box-shadow: var(--button-hover-shadow);
+    transform: translate(-2px, -2px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 5px;
+  }
+}
+
+@media (max-width: 900px) {
+  .memory-game {
+    padding: 28px 20px 48px;
+  }
+
+  .memory-game__topbar {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .memory-scoreboard,
+  .memory-exit {
+    justify-self: center;
+  }
+
+  .memory-game--16 .memory-board,
+  .memory-game--24 .memory-board,
+  .memory-game--36 .memory-board {
+    grid-template-columns: repeat(4, minmax(64px, 1fr));
+    width: min(540px, 100%);
+  }
+
+  .memory-card,
+  .memory-game--24 .memory-card,
+  .memory-game--36 .memory-card {
+    width: 100%;
+  }
+
+  .memory-modal__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}

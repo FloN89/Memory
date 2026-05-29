@@ -1,0 +1,165 @@
+.theme-code-vibes {
+  --theme-font: "Orbitron", "Trebuchet MS", Arial, sans-serif;
+  --theme-display-font: "Orbitron", "Trebuchet MS", Arial, sans-serif;
+  --theme-bg: #285565;
+  --theme-panel: rgba(85, 95, 123, 0.95);
+  --theme-text: #f7fbff;
+  --theme-current-text: #f7fbff;
+  --theme-primary: #f01f78;
+  --theme-blue: #24a5ee;
+  --theme-orange: #f27500;
+  --score-bg: #f8f9fc;
+  --score-radius: 8px;
+  --topbar-radius: 8px;
+  --topbar-padding: 24px;
+  --button-bg: rgba(77, 80, 104, 0.88);
+  --button-hover-bg: rgba(77, 80, 104, 1);
+  --button-text: #f6f6f8;
+  --button-radius: 10px;
+  --button-hover-shadow: 4px 4px 0 rgba(240, 31, 120, 0.45);
+  --focus-ring: rgba(240, 31, 120, 0.35);
+  --board-gap: 16px;
+  --card-size-16: 120px;
+  --card-size-24: 108px;
+  --card-size-36: 92px;
+  --card-radius: 12px;
+  --card-back-bg: linear-gradient(135deg, #f01f78, #602647);
+  --card-front-bg: linear-gradient(
+    145deg,
+    rgba(240, 31, 120, 0.96),
+    rgba(79, 33, 79, 0.98)
+  );
+  --card-shadow: 0 10px 14px rgba(0, 0, 0, 0.28);
+  --modal-backdrop: rgba(8, 18, 24, 0.18);
+  --modal-bg: #f5fbff;
+  --modal-text: #285565;
+  --modal-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+  --game-over-title: #f01f78;
+  --game-over-shadow:
+    0 0 12px rgba(240, 31, 120, 0.65),
+    9px 9px 0 rgba(0, 0, 0, 0.28);
+  --winner-title: #f01f78;
+  --winner-shadow: 0 4px 0 rgba(0, 0, 0, 0.28);
+  --winner-icon-width: 250px;
+  --winner-icon-height: 250px;
+  --display-letter-spacing: 0.04em;
+}
+
+.theme-gaming {
+  --theme-font: "Trebuchet MS", Arial, sans-serif;
+  --theme-display-font: Impact, "Arial Black", "Trebuchet MS", sans-serif;
+  --theme-bg: radial-gradient(
+    circle at 50% 12%,
+    #333b89 0,
+    #141631 44%,
+    #080912 100%
+  );
+  --theme-panel: linear-gradient(
+    135deg,
+    rgba(41, 46, 106, 0.96),
+    rgba(18, 21, 47, 0.96)
+  );
+  --theme-text: #f8fbff;
+  --theme-current-text: #f8fbff;
+  --theme-primary: #7cff5b;
+  --theme-blue: #31d6ff;
+  --theme-orange: #ff9f1c;
+  --score-bg: rgba(8, 11, 27, 0.72);
+  --score-radius: 14px;
+  --topbar-border: 2px solid rgba(124, 255, 91, 0.45);
+  --topbar-radius: 18px;
+  --topbar-shadow:
+    0 0 28px rgba(49, 214, 255, 0.16),
+    inset 0 0 22px rgba(124, 255, 91, 0.08);
+  --button-bg: rgba(124, 255, 91, 0.09);
+  --button-hover-bg: rgba(124, 255, 91, 0.2);
+  --button-text: #f8fbff;
+  --button-radius: 14px;
+  --button-hover-shadow:
+    0 0 18px rgba(124, 255, 91, 0.42),
+    5px 5px 0 rgba(49, 214, 255, 0.28);
+  --focus-ring: rgba(124, 255, 91, 0.42);
+  --board-gap: 16px;
+  --card-size-16: 122px;
+  --card-size-24: 108px;
+  --card-size-36: 92px;
+  --card-radius: 18px;
+  --card-back-border: 2px solid rgba(124, 255, 91, 0.38);
+  --card-back-bg: linear-gradient(145deg, #7c3aed, #111827);
+  --card-front-border: 2px solid rgba(49, 214, 255, 0.5);
+  --card-front-bg: radial-gradient(circle at 50% 25%, #2632ad, #111827 72%);
+  --card-shadow:
+    0 0 20px rgba(49, 214, 255, 0.2),
+    0 12px 18px rgba(0, 0, 0, 0.45);
+  --card-image-size: 72%;
+  --matched-opacity: 0.5;
+  --modal-backdrop: rgba(0, 0, 0, 0.62);
+  --modal-bg: linear-gradient(145deg, #1d2355, #111327);
+  --modal-text: #f8fbff;
+  --modal-border: 2px solid rgba(124, 255, 91, 0.55);
+  --modal-radius: 22px;
+  --modal-shadow:
+    0 0 45px rgba(49, 214, 255, 0.25),
+    0 30px 70px rgba(0, 0, 0, 0.45);
+  --game-over-title: #ff2bd6;
+  --game-over-shadow:
+    0 0 20px rgba(255, 43, 214, 0.55),
+    8px 8px 0 rgba(49, 214, 255, 0.25);
+  --winner-title: #7cff5b;
+  --winner-shadow: 0 0 20px rgba(124, 255, 91, 0.42);
+  --winner-icon-width: 260px;
+  --winner-icon-height: 260px;
+  --winner-icon-filter: drop-shadow(0 0 20px rgba(124, 255, 91, 0.35));
+  --display-letter-spacing: 0.06em;
+}
+
+.theme-foods {
+  --theme-font: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
+  --theme-display-font: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
+  --theme-bg: #fffaf3;
+  --theme-panel: #f4e7d5;
+  --theme-text: #a8540f;
+  --theme-current-text: #a8540f;
+  --theme-primary: #ff8a2a;
+  --theme-blue: #0f7ec7;
+  --theme-orange: #ef6c00;
+  --score-bg: #ffffff;
+  --score-radius: 9px;
+  --topbar-radius: 8px;
+  --topbar-padding: 22px 24px;
+  --button-bg: #fff7ec;
+  --button-hover-bg: #ff8a2a;
+  --button-text: #a8540f;
+  --button-radius: 10px;
+  --button-hover-shadow: 5px 5px 0 rgba(168, 84, 15, 0.22);
+  --focus-ring: rgba(255, 138, 42, 0.45);
+  --board-gap: 14px;
+  --card-size-16: 122px;
+  --card-size-24: 108px;
+  --card-size-36: 92px;
+  --card-radius: 0;
+  --card-back-bg: #ff8124;
+  --card-front-bg: #fff0dc;
+  --card-front-border: 4px solid #ffb36d;
+  --card-shadow: 5px 5px 0 rgba(168, 84, 15, 0.16);
+  --card-image-size: 76%;
+  --modal-backdrop: rgba(48, 49, 49, 0.45);
+  --modal-bg: #fffdf9;
+  --modal-text: #a8540f;
+  --modal-radius: 16px;
+  --modal-shadow: 0 18px 40px rgba(168, 84, 15, 0.18);
+  --modal-filled-text: #fff;
+  --game-over-title: #ff8124;
+  --game-over-shadow: 0 4px 0 rgba(168, 84, 15, 0.18);
+  --winner-title: #a8540f;
+  --winner-shadow: none;
+  --winner-icon-width: 240px;
+  --winner-icon-height: 240px;
+  --display-letter-spacing: 0;
+
+  &.memory-game-over {
+    --theme-bg: #ff8124;
+    --theme-text: #ffffff;
+    --score-bg: #ffffff;
+  }
+}
