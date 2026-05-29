@@ -1,6 +1,7 @@
-import { initStartScreen } from "./game/start-screen";
+import { initStartScreen } from "./game/start-screen.ts";
 import { getRequiredElement } from "./game/utils";
 
+/** Finds the game root element and starts the initial screen. */
 export const initMemoryApp = (): void => {
   const field = getRequiredElement<HTMLElement>("#field");
   initStartScreen(field);

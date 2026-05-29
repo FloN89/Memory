@@ -4,6 +4,7 @@ type ViteImportMeta = ImportMeta & {
   };
 };
 
+/** Builds a public asset URL that respects Vite's configured base path. */
 export const asset = (path: string): string => {
   const baseUrl = (import.meta as ViteImportMeta).env?.BASE_URL ?? "/";
 
@@ -12,6 +13,7 @@ export const asset = (path: string): string => {
     .replace(/^public\//, "")}`;
 };
 
+/** Creates the ordered image URLs for a repeated component export. */
 export const componentAssets = (
   folder: string,
   componentName: string,
@@ -24,11 +26,13 @@ export const componentAssets = (
   });
 };
 
+/** Starts loading a single image before it is needed in the UI. */
 export const preloadImage = (src: string): void => {
   const image = new Image();
   image.src = src;
 };
 
+/** Preloads a list of image URLs while safely ignoring empty values. */
 export const preloadImages = (sources: Array<string | undefined>): void => {
   sources.filter((src): src is string => Boolean(src)).forEach(preloadImage);
 };

@@ -11,6 +11,7 @@ import { setCssImage, shuffleArray } from "./utils";
 
 let field: HTMLElement;
 
+/** Renders a new memory game with the chosen settings and binds its event handlers. */
 export const renderMemoryGame = (
   root: HTMLElement,
   settings: CompleteSettings,
@@ -54,6 +55,7 @@ export const renderMemoryGame = (
   updateGameUi(field, game);
 };
 
+/** Stores theme-specific game button and card images in CSS custom properties. */
 const setGameCssImages = (theme: ThemeConfig): void => {
   setCssImage(field, "--memory-card-back-image", theme.cardBack);
   setCssImage(field, "--memory-card-back-hover-image", theme.cardBackHover);
@@ -65,6 +67,7 @@ const setGameCssImages = (theme: ThemeConfig): void => {
   setCssImage(field, "--memory-dialog-exit-hover-image", theme.buttons.exitHover);
 };
 
+/** Creates the full in-memory game state from settings and theme assets. */
 const createMemoryGame = (
   settings: CompleteSettings,
   theme: ThemeConfig,
@@ -110,6 +113,7 @@ const createMemoryGame = (
   };
 };
 
+/** Attaches card-click and exit-button events for the current game. */
 const bindGameEvents = (game: MemoryGameState): void => {
   field.querySelectorAll<HTMLButtonElement>("[data-card-id]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -126,6 +130,7 @@ const bindGameEvents = (game: MemoryGameState): void => {
   });
 };
 
+/** Handles one card click and starts pair checking after two cards are open. */
 const handleCardClick = (game: MemoryGameState, cardId: string): void => {
   if (game.lockBoard || game.isFinished) {
     return;
@@ -149,6 +154,7 @@ const handleCardClick = (game: MemoryGameState, cardId: string): void => {
   checkFlippedCards(game);
 };
 
+/** Compares the two currently flipped cards and routes to match or mismatch handling. */
 const checkFlippedCards = (game: MemoryGameState): void => {
   const [firstId, secondId] = game.flippedIds;
   const firstCard = game.cards.find((item) => item.id === firstId);
@@ -167,12 +173,14 @@ const checkFlippedCards = (game: MemoryGameState): void => {
   handleMismatch(game, firstCard, secondCard);
 };
 
+/** Clears flipped-card tracking, unlocks the board, and refreshes the UI. */
 const resetFlippedCards = (game: MemoryGameState): void => {
   game.flippedIds = [];
   game.lockBoard = false;
   updateGameUi(field, game);
 };
 
+/** Marks a pair as matched, awards points, and finishes the game when all pairs are found. */
 const handleMatch = (
   game: MemoryGameState,
   firstCard: MemoryCard,
@@ -195,6 +203,7 @@ const handleMatch = (
   }, 350);
 };
 
+/** Turns non-matching cards back over and passes the turn to the other player. */
 const handleMismatch = (
   game: MemoryGameState,
   firstCard: MemoryCard,

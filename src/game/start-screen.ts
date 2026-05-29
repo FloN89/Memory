@@ -3,6 +3,7 @@ import { renderSettingsScreen } from "./settings-screen";
 import { startAssets } from "./themes";
 import { setCssImage } from "./utils";
 
+/** Initializes the start screen assets and connects the play button to the settings screen. */
 export const initStartScreen = (field: HTMLElement): void => {
   const playButton = field.querySelector<HTMLButtonElement>("[data-play-button]");
   const controller = field.querySelector<HTMLImageElement>("[data-controller]");
@@ -27,6 +28,7 @@ export const initStartScreen = (field: HTMLElement): void => {
   playButton.addEventListener("click", () => renderSettingsScreen(field));
 };
 
+/** Adds and removes the shared hover class for pointer and keyboard interactions. */
 const bindHoverClass = (button: HTMLButtonElement): void => {
   button.addEventListener("pointerenter", () => {
     button.classList.add("is-hovered");

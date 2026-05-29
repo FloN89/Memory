@@ -1,3 +1,4 @@
+/** Returns a required DOM element or throws a clear error when it is missing. */
 export const getRequiredElement = <T extends Element>(selector: string): T => {
   const element = document.querySelector<T>(selector);
 
@@ -8,10 +9,12 @@ export const getRequiredElement = <T extends Element>(selector: string): T => {
   return element;
 };
 
+/** Capitalizes the first character of a string without changing the rest of it. */
 export const capitalize = (value: string): string => {
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
+/** Returns a shuffled copy of an array using the Fisher-Yates algorithm. */
 export const shuffleArray = <T>(items: T[]): T[] => {
   const array = [...items];
 
@@ -23,6 +26,7 @@ export const shuffleArray = <T>(items: T[]): T[] => {
   return array;
 };
 
+/** Stores an image URL in a CSS custom property as a valid url() value. */
 export const setCssImage = (
   element: HTMLElement,
   customProperty: string,

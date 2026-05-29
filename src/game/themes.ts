@@ -130,6 +130,7 @@ export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
   },
 };
 
+/** Preloads all images that can appear on the settings screen. */
 export const preloadSettingsAssets = (): void => {
   preloadImages([
     settingsAssets.startButton,
@@ -146,6 +147,7 @@ export const preloadSettingsAssets = (): void => {
   ]);
 };
 
+/** Preloads all images needed for the selected theme and board size. */
 export const preloadThemeAssets = (
   theme: ThemeConfig,
   boardSize: BoardSize,

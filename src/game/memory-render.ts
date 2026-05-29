@@ -5,6 +5,7 @@ import type {
   ThemeConfig,
 } from "./types";
 
+/** Renders one player score entry with its token and score value. */
 export const renderScoreItem = (
   theme: ThemeConfig,
   player: PlayerKey,
@@ -18,6 +19,7 @@ export const renderScoreItem = (
   `;
 };
 
+/** Renders the token image for the requested player. */
 export const renderToken = (theme: ThemeConfig, player: PlayerKey): string => {
   const src = player === "blue" ? theme.blueToken : theme.orangeToken;
 
@@ -32,6 +34,7 @@ export const renderToken = (theme: ThemeConfig, player: PlayerKey): string => {
   `;
 };
 
+/** Renders one clickable memory card with a back and front face. */
 export const renderCard = (card: MemoryCard): string => {
   return `
     <button
@@ -51,6 +54,7 @@ export const renderCard = (card: MemoryCard): string => {
   `;
 };
 
+/** Synchronizes score, current player, and card states with the current game state. */
 export const updateGameUi = (
   field: HTMLElement,
   game: MemoryGameState,
