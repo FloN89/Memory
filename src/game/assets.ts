@@ -1,16 +1,13 @@
-type ViteImportMeta = ImportMeta & {
-  env?: {
-    BASE_URL?: string;
-  };
+/** Normalizes a public asset path for usage with Vite's base path. */
+const normalizeAssetPath = (path: string): string => {
+  return path
+    .replace(/^\/+/, "")
+    .replace(/^public\//, "");
 };
 
 /** Builds a public asset URL that respects Vite's configured base path. */
 export const asset = (path: string): string => {
-  const baseUrl = (import.meta as ViteImportMeta).env?.BASE_URL ?? "/";
-
-  return `${baseUrl}${path
-    .replace(/^\/+/, "")
-    .replace(/^public\//, "")}`;
+  return `${import.meta.env.BASE_URL}${normalizeAssetPath(path)}`;
 };
 
 /** Creates the ordered image URLs for a repeated component export. */

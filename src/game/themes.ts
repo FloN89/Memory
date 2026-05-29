@@ -1,12 +1,24 @@
 import { asset, componentAssets, preloadImages } from "./assets";
 import type { BoardSize, ThemeConfig, ThemeKey } from "./types";
 
+const SETTINGS_IMAGE_ASSETS = [
+  "startButton",
+  "startButtonHover",
+  "startButtonDisabled",
+  "titleLine",
+  "themeHoverLine",
+  "summaryLineEmpty",
+  "summaryLineSelected",
+] as const;
+
+/** Creates numbered image URLs from a folder and shared base name. */
 const numberedAssets = (folder: string, baseName: string, amount: number): string[] => {
   return Array.from({ length: amount }, (_, index) => {
     return asset(`${folder}/${baseName} ${index + 1}.png`);
   });
 };
 
+/** Returns optional theme assets while removing missing values. */
 const optionalThemeAssets = (theme: ThemeConfig): string[] => {
   const confettiAssets = Array.isArray(theme.confetti)
     ? theme.confetti
@@ -17,13 +29,13 @@ const optionalThemeAssets = (theme: ThemeConfig): string[] => {
   );
 };
 
-export const startAssets = {
+export const START_ASSETS = {
   controller: asset("assets/base-themes/stadia_controller.png"),
   playButton: asset("assets/base-themes/play_button.png"),
   playButtonHover: asset("assets/base-themes/play_button_hover.png"),
 } as const;
 
-export const settingsAssets = {
+export const SETTINGS_ASSETS = {
   startButton: asset("assets/base-themes/start_button.png"),
   startButtonHover: asset("assets/base-themes/start_button_hover.png"),
   startButtonDisabled: asset("assets/base-themes/start_button_disabled.png"),
@@ -40,7 +52,7 @@ export const settingsAssets = {
   },
 } as const;
 
-export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
+export const THEME_CONFIGS: Record<ThemeKey, ThemeConfig> = {
   "code-vibes": {
     key: "code-vibes",
     label: "Code vibes theme",
@@ -139,29 +151,18 @@ export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
   },
 };
 
-/** Preloads all images that can appear on the settings screen. */
-export const preloadSettingsAssets = (): void => {
-  preloadImages([
-    settingsAssets.startButton,
-    settingsAssets.startButtonHover,
-    settingsAssets.startButtonDisabled,
-    settingsAssets.titleLine,
-    settingsAssets.themeHoverLine,
-    settingsAssets.summaryLineEmpty,
-    settingsAssets.summaryLineSelected,
-    settingsAssets.icons.themes,
-    settingsAssets.icons.player,
-    settingsAssets.icons.board,
-    ...Object.values(themeConfigs).map((theme) => theme.previewImage),
-  ]);
+/** Returns all image URLs used by the settings screen. */
+const getSettingsImageSources = (): string[] => {
+  const baseSources = SETTINGS_IMAGE_ASSETS.map((key) => SETTINGS_ASSETS[key]);
+  const iconSources = Object.values(SETTINGS_ASSETS.icons);
+  const previewSources = Object.values(THEME_CONFIGS).map((theme) => theme.previewImage);
+
+  return [...baseSources, ...iconSources, ...previewSources];
 };
 
-/** Preloads all images needed for the selected theme and board size. */
-export const preloadThemeAssets = (
-  theme: ThemeConfig,
-  boardSize: BoardSize,
-): void => {
-  preloadImages([
+/** Returns all fixed image URLs used by one theme. */
+const getThemeBaseSources = (theme: ThemeConfig): string[] => {
+  return [
     theme.cardBack,
     theme.cardBackHover,
     theme.blueToken,
@@ -170,11 +171,33 @@ export const preloadThemeAssets = (
     theme.exitIconHover,
     theme.blueWinner,
     theme.orangeWinner,
-    ...optionalThemeAssets(theme),
+  ];
+};
+
+/** Returns all button image URLs used by one theme. */
+const getThemeButtonSources = (theme: ThemeConfig): string[] => {
+  return [
     theme.buttons.back,
     theme.buttons.backHover,
     theme.buttons.exit,
     theme.buttons.exitHover,
+  ];
+};
+
+/** Preloads all images that can appear on the settings screen. */
+export const preloadSettingsAssets = (): void => {
+  preloadImages(getSettingsImageSources());
+};
+
+/** Preloads all images needed for the selected theme and board size. */
+export const preloadThemeAssets = (
+  theme: ThemeConfig,
+  boardSize: BoardSize,
+): void => {
+  preloadImages([
+    ...getThemeBaseSources(theme),
+    ...optionalThemeAssets(theme),
+    ...getThemeButtonSources(theme),
     ...theme.cardFronts.slice(0, boardSize / 2),
   ]);
 };

@@ -43,14 +43,27 @@ export const renderCard = (card: MemoryCard): string => {
       type="button"
       aria-label="Karte aufdecken"
     >
-      <span class="memory-card__inner">
-        <span class="memory-card__face memory-card__face--back"></span>
-
-        <span class="memory-card__face memory-card__face--front">
-          <img src="${card.image}" alt="" draggable="false" />
-        </span>
-      </span>
+      ${renderCardInner(card)}
     </button>
+  `;
+};
+
+/** Renders the rotating card wrapper with both card sides. */
+const renderCardInner = (card: MemoryCard): string => {
+  return `
+    <span class="memory-card__inner">
+      <span class="memory-card__face memory-card__face--back"></span>
+      ${renderCardFront(card)}
+    </span>
+  `;
+};
+
+/** Renders the front side image of one memory card. */
+const renderCardFront = (card: MemoryCard): string => {
+  return `
+    <span class="memory-card__face memory-card__face--front">
+      <img src="${card.image}" alt="" draggable="false" />
+    </span>
   `;
 };
 
@@ -59,31 +72,54 @@ export const updateGameUi = (
   field: HTMLElement,
   game: MemoryGameState,
 ): void => {
-  const blueScore = field.querySelector<HTMLElement>('[data-score="blue"]');
-  const orangeScore = field.querySelector<HTMLElement>('[data-score="orange"]');
+  updateScoreUi(field, game);
+  updateCurrentPlayerUi(field, game);
+  updateCardButtons(field, game);
+};
+
+/** Updates both score values in the game UI. */
+const updateScoreUi = (field: HTMLElement, game: MemoryGameState): void => {
+  updateText(field, '[data-score="blue"]', String(game.score.blue));
+  updateText(field, '[data-score="orange"]', String(game.score.orange));
+};
+
+/** Updates a single text node when the target element exists. */
+const updateText = (field: HTMLElement, selector: string, value: string): void => {
+  const element = field.querySelector<HTMLElement>(selector);
+
+  if (element) {
+    element.textContent = value;
+  }
+};
+
+/** Updates the current-player token in the game UI. */
+const updateCurrentPlayerUi = (field: HTMLElement, game: MemoryGameState): void => {
   const currentPlayer = field.querySelector<HTMLElement>("[data-current-player]");
-
-  if (blueScore) {
-    blueScore.textContent = String(game.score.blue);
-  }
-
-  if (orangeScore) {
-    orangeScore.textContent = String(game.score.orange);
-  }
 
   if (currentPlayer) {
     currentPlayer.innerHTML = renderToken(game.theme, game.currentPlayer);
   }
+};
 
+/** Updates all card button states from the game state. */
+const updateCardButtons = (field: HTMLElement, game: MemoryGameState): void => {
   field.querySelectorAll<HTMLButtonElement>("[data-card-id]").forEach((button) => {
-    const card = game.cards.find((item) => item.id === button.dataset.cardId);
-
-    if (!card) {
-      return;
-    }
-
-    button.classList.toggle("is-flipped", card.isFlipped || card.isMatched);
-    button.classList.toggle("is-matched", card.isMatched);
-    button.disabled = game.lockBoard || card.isFlipped || card.isMatched;
+    updateCardButton(button, game);
   });
+};
+
+/** Updates one card button with flipped, matched, and disabled states. */
+const updateCardButton = (
+  button: HTMLButtonElement,
+  game: MemoryGameState,
+): void => {
+  const card = game.cards.find((item) => item.id === button.dataset.cardId);
+
+  if (!card) {
+    return;
+  }
+
+  button.classList.toggle("is-flipped", card.isFlipped || card.isMatched);
+  button.classList.toggle("is-matched", card.isMatched);
+  button.disabled = game.lockBoard || card.isFlipped || card.isMatched;
 };
