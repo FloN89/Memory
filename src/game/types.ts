@@ -56,7 +56,7 @@ export type ThemeConfig = {
   blueWinner: string;
   orangeWinner: string;
   drawWinner?: string;
-  confetti?: string;
+  confetti?: string | string[];
   buttons: ThemeButtonImages;
   cardFronts: string[];
 };

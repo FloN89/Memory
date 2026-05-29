@@ -4,6 +4,8 @@ import type { MemoryGameState, PlayerKey } from "./types";
 
 type WinnerKey = PlayerKey | "draw";
 
+const GAME_OVER_TO_SETTINGS_DELAY_MS = 1200;
+
 /** Determines which player won, or returns draw when both scores are equal. */
 const getWinner = (game: MemoryGameState): WinnerKey => {
   if (game.score.blue > game.score.orange) {
@@ -30,13 +32,49 @@ const getWinnerImage = (game: MemoryGameState, winner: WinnerKey): string | null
   return game.theme.drawWinner ?? null;
 };
 
+/** Builds the label shown above the winner headline. */
+const getWinnerEyebrow = (winner: WinnerKey): string => {
+  return winner === "draw" ? "The game ended in" : "The winner is";
+};
+
 /** Builds the headline text for the winner screen. */
 const getWinnerTitle = (winner: WinnerKey): string => {
   if (winner === "draw") {
-    return "Draw";
+    return "DRAW";
   }
 
-  return `${winner.charAt(0).toUpperCase()}${winner.slice(1)} wins`;
+  return `${winner.toUpperCase()} PLAYER`;
+};
+
+/** Normalizes one or multiple confetti images from the active theme. */
+const getConfettiImages = (game: MemoryGameState): string[] => {
+  if (!game.theme.confetti) {
+    return [];
+  }
+
+  return Array.isArray(game.theme.confetti)
+    ? game.theme.confetti
+    : [game.theme.confetti];
+};
+
+/** Renders the decorative confetti images for the winner screen. */
+const renderConfetti = (sources: string[]): string => {
+  if (sources.length === 0) {
+    return "";
+  }
+
+  return `
+    <div class="memory-winner__confetti-layer" aria-hidden="true">
+      ${sources.map((source, index) => `
+        <img
+          class="memory-winner__confetti memory-winner__confetti--${index + 1}"
+          src="${source}"
+          alt=""
+          draggable="false"
+        />
+      `).join("")}
+    </div>
+  `;
 };
 
 /** Opens a confirmation dialog that lets the player continue or quit the current game. */
@@ -86,12 +124,17 @@ export const showQuitDialog = (field: HTMLElement, game: MemoryGameState): void 
   });
 };
 
-/** Renders the final game-over screen and optionally continues to the winner screen. */
+/** Renders game-over after quitting, or directly renders winner after a completed game. */
 export const renderGameOver = (
   field: HTMLElement,
   game: MemoryGameState,
   showWinnerAfterDelay: boolean,
 ): void => {
+  if (showWinnerAfterDelay) {
+    renderWinnerScreen(field, game);
+    return;
+  }
+
   field.className = `memory-game-over ${game.theme.className}`;
   field.setAttribute("aria-label", "Game over");
 
@@ -106,34 +149,25 @@ export const renderGameOver = (
     </div>
   `;
 
-  if (showWinnerAfterDelay) {
-    window.setTimeout(() => {
-      renderWinnerScreen(field, game);
-    }, 900);
-  }
+  window.setTimeout(() => {
+    renderSettingsScreen(field);
+  }, GAME_OVER_TO_SETTINGS_DELAY_MS);
 };
 
 /** Renders the winner screen after all cards have been matched. */
 const renderWinnerScreen = (field: HTMLElement, game: MemoryGameState): void => {
   const winner = getWinner(game);
   const winnerImage = getWinnerImage(game, winner);
+  const confettiImages = winner === "draw" ? [] : getConfettiImages(game);
 
   field.className = `memory-winner memory-winner--${winner} ${game.theme.className}`;
   field.setAttribute("aria-label", "Winner screen");
 
   field.innerHTML = `
-    ${game.theme.confetti ? `
-      <img
-        class="memory-winner__confetti"
-        src="${game.theme.confetti}"
-        alt=""
-        aria-hidden="true"
-        draggable="false"
-      />
-    ` : ""}
+    ${renderConfetti(confettiImages)}
 
     <div class="memory-winner__content">
-      <p>Winner</p>
+      <p>${getWinnerEyebrow(winner)}</p>
       <h1>${getWinnerTitle(winner)}</h1>
 
       ${winnerImage ? `
@@ -148,7 +182,12 @@ const renderWinnerScreen = (field: HTMLElement, game: MemoryGameState): void => 
         <span class="memory-winner__draw-icon" aria-hidden="true">=</span>
       `}
 
-      <button class="memory-winner__back" data-winner-back type="button">
+      <button
+        class="memory-winner__back"
+        data-winner-back
+        type="button"
+        aria-label="Back to settings screen"
+      >
         Back to settings
       </button>
     </div>

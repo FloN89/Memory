@@ -215,7 +215,7 @@
 }
 
 .memory-card__face--front {
-  padding: var(--card-front-padding, 14px);
+  padding: var(--card-front-padding, 0);
   border: var(--card-front-border, 0);
   background: var(--card-front-bg);
   box-shadow: var(--card-shadow);
@@ -223,9 +223,9 @@
 
   img {
     display: block;
-    width: var(--card-image-size, 76%);
-    height: var(--card-image-size, 76%);
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     user-select: none;
     pointer-events: none;
   }
@@ -347,16 +347,74 @@
   position: relative;
 }
 
-.memory-winner__confetti {
+.memory-winner__confetti-layer {
   position: absolute;
-  top: 10px;
-  left: 50%;
-  width: min(1120px, calc(100% - 100px));
-  max-height: 280px;
-  object-fit: contain;
-  transform: translateX(-50%);
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 0;
+  height: clamp(170px, 28vw, 320px);
+  overflow: hidden;
   pointer-events: none;
   user-select: none;
+}
+
+.memory-winner__confetti {
+  position: absolute;
+  display: block;
+  width: clamp(98px, 13vw, 190px);
+  height: auto;
+  object-fit: contain;
+}
+
+.memory-winner__confetti:only-child {
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.memory-winner__confetti--1 {
+  top: 6%;
+  left: 6%;
+}
+
+.memory-winner__confetti--2 {
+  top: 0;
+  left: 18%;
+}
+
+.memory-winner__confetti--3 {
+  top: 8%;
+  left: 31%;
+}
+
+.memory-winner__confetti--4 {
+  top: 2%;
+  left: 44%;
+}
+
+.memory-winner__confetti--5 {
+  top: 6%;
+  right: 32%;
+}
+
+.memory-winner__confetti--6 {
+  top: 0;
+  right: 20%;
+}
+
+.memory-winner__confetti--7 {
+  top: 8%;
+  right: 9%;
+}
+
+.memory-winner__confetti--8 {
+  top: 20%;
+  right: 2%;
 }
 
 .memory-winner__content {
@@ -542,4 +600,24 @@
   &:focus-visible {
     background-image: var(--memory-dialog-exit-hover-image);
   }
+}
+
+
+.memory-winner.memory-winner--blue .memory-winner__icon,
+.memory-winner.memory-winner--orange .memory-winner__icon {
+  width: clamp(78px, 8vw, 110px);
+  height: clamp(78px, 8vw, 110px);
+}
+
+
+.memory-winner.theme-code-vibes.memory-winner--blue .memory-winner__icon,
+.memory-winner.theme-code-vibes.memory-winner--orange .memory-winner__icon {
+  width: clamp(96px, 10vw, 130px);
+  height: clamp(48px, 5.5vw, 68px);
+}
+
+.memory-winner.theme-foods.memory-winner--blue .memory-winner__icon,
+.memory-winner.theme-foods.memory-winner--orange .memory-winner__icon {
+  width: clamp(70px, 7vw, 96px);
+  height: clamp(70px, 7vw, 96px);
 }

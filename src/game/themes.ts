@@ -1,10 +1,21 @@
 import { asset, componentAssets, preloadImages } from "./assets";
 import type { BoardSize, ThemeConfig, ThemeKey } from "./types";
 
-const playerTokenAssets = {
-  blue: asset("assets/dev-themes/label.png"),
-  orange: asset("assets/dev-themes/label_orange.png"),
-} as const;
+const numberedAssets = (folder: string, baseName: string, amount: number): string[] => {
+  return Array.from({ length: amount }, (_, index) => {
+    return asset(`${folder}/${baseName} ${index + 1}.png`);
+  });
+};
+
+const optionalThemeAssets = (theme: ThemeConfig): string[] => {
+  const confettiAssets = Array.isArray(theme.confetti)
+    ? theme.confetti
+    : [theme.confetti];
+
+  return [theme.drawWinner, ...confettiAssets].filter(
+    (source): source is string => Boolean(source),
+  );
+};
 
 export const startAssets = {
   controller: asset("assets/base-themes/stadia_controller.png"),
@@ -39,16 +50,16 @@ export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
     cardBack: asset("assets/dev-themes/Property 1=Component 21.png"),
     cardBackHover: asset("assets/dev-themes/Property 1=Component 21.png"),
 
-    blueToken: playerTokenAssets.blue,
-    orangeToken: playerTokenAssets.orange,
+    blueToken: asset("assets/dev-themes/label.png"),
+    orangeToken: asset("assets/dev-themes/label_orange.png"),
 
     exitIcon: asset("assets/dev-themes/Property 1=Default.png"),
     exitIconHover: asset("assets/dev-themes/Property 1=hover.png"),
 
-    blueWinner: asset("assets/dev-themes/code-vibes/blue-winner.png"),
-    orangeWinner: asset("assets/dev-themes/code-vibes/orange-winner.png"),
-    drawWinner: asset("assets/dev-themes/code-vibes/draw-winner.png"),
-    confetti: asset("assets/dev-themes/code-vibes/confetti.png"),
+    blueWinner: asset("assets/dev-themes/label.png"),
+    orangeWinner: asset("assets/dev-themes/label_orange.png"),
+    drawWinner: asset("assets/dev-themes/Scale_Icon.png"),
+    confetti: numberedAssets("assets/dev-themes", "confetti", 8),
 
     buttons: {
       back: asset("assets/dev-themes/Property 1=Default_back.png"),
@@ -72,16 +83,15 @@ export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
     cardBack: asset("assets/game-themes/Rectangle 37.png"),
     cardBackHover: asset("assets/game-themes/Rectangle 37.png"),
 
-    blueToken: playerTokenAssets.blue,
-    orangeToken: playerTokenAssets.orange,
+    blueToken: asset("assets/game-themes/chess_pawn_blue.png"),
+    orangeToken: asset("assets/game-themes/chess_pawn.png"),
 
     exitIcon: asset("assets/game-themes/Property 1=Default.png"),
     exitIconHover: asset("assets/game-themes/Property 1=hover.png"),
 
-    blueWinner: asset("assets/game-themes/gaming/blue-winner.png"),
-    orangeWinner: asset("assets/game-themes/gaming/orange-winner.png"),
-    drawWinner: asset("assets/game-themes/gaming/draw-winner.png"),
-    confetti: asset("assets/game-themes/gaming/confetti.png"),
+    blueWinner: asset("assets/game-themes/pockal 1.png"),
+    orangeWinner: asset("assets/game-themes/pockal 1.png"),
+    drawWinner: asset("assets/game-themes/Scale_Icon.png"),
 
     buttons: {
       back: asset("assets/game-themes/Property 1=default (1).png"),
@@ -105,16 +115,15 @@ export const themeConfigs: Record<ThemeKey, ThemeConfig> = {
     cardBack: asset("assets/food-themes/frond.png"),
     cardBackHover: asset("assets/food-themes/frond.png"),
 
-    blueToken: playerTokenAssets.blue,
-    orangeToken: playerTokenAssets.orange,
+    blueToken: asset("assets/food-themes/chess_pawn_blue.png"),
+    orangeToken: asset("assets/food-themes/chess_pawn.png"),
 
     exitIcon: asset("assets/food-themes/Property 1=Default (2).png"),
     exitIconHover: asset("assets/food-themes/Property 1=hover (2).png"),
 
-    blueWinner: asset("assets/food-themes/foods/blue-winner.png"),
-    orangeWinner: asset("assets/food-themes/foods/orange-winner.png"),
-    drawWinner: asset("assets/food-themes/foods/draw-winner.png"),
-    confetti: asset("assets/food-themes/foods/confetti.png"),
+    blueWinner: asset("assets/food-themes/chess_pawn.png"),
+    orangeWinner: asset("assets/food-themes/Frame 739_orange.png"),
+    drawWinner: asset("assets/food-themes/Frame 739.png"),
 
     buttons: {
       back: asset("assets/food-themes/Property 1=Default (3).png"),
@@ -161,8 +170,7 @@ export const preloadThemeAssets = (
     theme.exitIconHover,
     theme.blueWinner,
     theme.orangeWinner,
-    theme.drawWinner,
-    theme.confetti,
+    ...optionalThemeAssets(theme),
     theme.buttons.back,
     theme.buttons.backHover,
     theme.buttons.exit,
