@@ -1,4 +1,4 @@
-import { initStartScreen } from "./game/start-screen.ts";
+import { initStartScreen } from "./game/start-screen";
 import { getRequiredElement } from "./game/utils";
 
 /** Finds the game root element and starts the initial screen. */
